@@ -26,10 +26,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">      
+    <html lang="en">
       <Head />
-      <body className={`${titillium.variable} font-sans w-screen h-screen bg-white`}>
-        {children}
+      <body 
+        className={`${titillium.variable} 
+        font-sans 
+        w-screen 
+        h-screen 
+        flex  
+        justify-center 
+        bg-white 
+        overflow-x-hidden`
+      }>
+
+        <div className="w-full max-w-[1366px]">
+          {children}
+        </div>
+        
       </body>
     </html>
   );
