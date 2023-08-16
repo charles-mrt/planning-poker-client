@@ -17,5 +17,5 @@ export const Header = ({ userName, gameName }: HeaderProps) => {
       </div>
       <div>{userName}</div>
     </header>
-  );
-};
+  )
+}

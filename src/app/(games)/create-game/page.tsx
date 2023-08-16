@@ -1,5 +1,5 @@
 import { CreateGameForm } from '@/app/components/CreateGameForm'
-import { Header } from '@/app/components/Header';
+import { Header } from '@/app/components/Header'
 
 export default function createGamePage() {
 

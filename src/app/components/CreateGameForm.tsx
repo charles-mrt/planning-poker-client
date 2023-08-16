@@ -5,12 +5,12 @@ import { Button } from './Button'
 import api from '../api/api'
 
 import { useForm } from 'react-hook-form'
-import { z } from 'zod';
+import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 const createGameFormSchema = z.object({
   'game_name': z.string().max(60, "Máximo 60 caracteres")
-});
+})
 
 type CreateGameFormData = z.infer<typeof createGameFormSchema>
 
@@ -22,23 +22,23 @@ export const CreateGameForm = () => {
     formState: { errors }
   } = useForm<CreateGameFormData>({
     resolver: zodResolver(createGameFormSchema)
-  });
+  })
 
-  const router = useRouter();
+  const router = useRouter()
 
   const handleCreateGame = async (formData: CreateGameFormData) => {
     try {
       const response = await api.post('/games', {
         name: formData.game_name
-      });
+      })
       
-      if (response.status === 201) router.push('/games');
+      if (response.status === 201) router.push('/games')
       
     } catch (error) {
-      console.error("error sending data to backend", error);
+      console.error("error sending data to backend", error)
     }
 
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit(handleCreateGame)} className="flex flex-col">
@@ -58,5 +58,5 @@ export const CreateGameForm = () => {
         <Button name="Criar jogo" />
       </div>
     </form>
-  );
-};
+  )
+}
