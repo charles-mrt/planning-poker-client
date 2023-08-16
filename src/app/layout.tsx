@@ -29,20 +29,10 @@ export default function RootLayout({
     <html lang="en">
       <Head />
       <body 
-        className={`${titillium.variable} 
-        font-sans 
-        w-screen 
-        h-screen 
-        flex  
-        justify-center 
-        bg-white 
-        overflow-x-hidden`
-      }>
-
-        <div className="w-full max-w-[1366px]">
+        className={`${titillium.variable} font-sans w-screen h-screen flex flex-col justify-between items-center bg-white overflow-x-hidden` }>
+        <div className="max-w-[1366px] h-full">
           {children}
         </div>
-        
       </body>
     </html>
   );
