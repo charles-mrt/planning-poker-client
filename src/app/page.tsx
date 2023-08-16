@@ -1,15 +1,12 @@
-import Link from "next/link";
-import { Header } from "./components/Header";
+import Link from 'next/link';
+import { Header } from './components/Header';
 
 export default function Home() {
 
   return (
-
-    <main className="h-full w-full">
-      
-      <Header userName="" gameName=""/>
-
-      <div className="h-full w-full flex flex-col items-center justify-center gap-11">
+    <div className="w-full h-full">
+      <Header />
+      <main className="h-full w-full flex flex-col items-center justify-center gap-11">
 
         <div className="text-4xl flex flex-col items-center gap-2">
           <span className="text-gray-800">Bem Vindo ao</span>
@@ -23,8 +20,8 @@ export default function Home() {
         <p className="text-base text-gray-500">Desfrute de uma jornada produtiva e divertida com nossa ferramenta!
           <a className="font-bold text-violet-600 cursor-not-allowed"> Saiba mais</a>
         </p>
-      </div>
 
-    </main>
+      </main>
+    </div>
   )
 }
