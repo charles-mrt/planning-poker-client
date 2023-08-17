@@ -16,10 +16,12 @@ export const Header = ({ userName, gameName }: HeaderProps) => {
         <Image src={logo} alt="logo planning poker" />
 
         {gameName &&
-          <span className="flex items-center gap-1">
+          <div className="flex items-center gap-1">
             <Dices size={16} strokeWidth={1} />
-            {`Nome do jogo: ${gameName}`}
-          </span>
+            <span className="cursor-pointer w-60 truncate ease-in duration-300 hover:text-clip hover:w-full">
+              {`Nome do jogo: ${gameName}`}
+            </span>
+          </div>
         }
 
       </div>
