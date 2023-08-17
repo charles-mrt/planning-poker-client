@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 
 const createUserNameFormSchema = z.object({
-  'user_name': z.string().max(10, "Máximo 10 caracteres")
+  'user_name': z.string().min(2, "Mínimo 2 caracteres").max(10, "Máximo 10 caracteres")
 })
 
 type CreateUserNameFormData = z.infer<typeof createUserNameFormSchema>
