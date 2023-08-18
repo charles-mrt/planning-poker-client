@@ -1,6 +1,9 @@
 import Link from 'next/link'
 import { Header } from './components/Header'
 
+
+export const metadata = { title: 'Planning Poker' }
+
 export default function Home() {
 
   return (
