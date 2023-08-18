@@ -2,7 +2,7 @@
 
 import { Button } from '../Button'
 import { UserCreationModal } from '../Users/UserCreationModal'
-import { useCreateGame } from './hooks/useCreateGame'
+import { useCreateGame } from '../../hooks/useCreateGame'
 
 export const CreateGameForm = () => {
   const { register, handleSubmit, errors, handleCreateGame, loginFormModal } = useCreateGame()

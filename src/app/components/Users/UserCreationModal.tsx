@@ -1,6 +1,6 @@
 
 import { Button } from '../Button'
-import { useCreateUserName } from './hooks/useCreateUserName'
+import { useCreateUserName } from '../../hooks/useCreateUserName'
 
 export const UserCreationModal = () => {
 
