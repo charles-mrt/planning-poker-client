@@ -27,7 +27,7 @@ export const useCreateUserName = () => {
 
   const handleCreateUserName = async (formData: CreateUserNameFormData) => {
     try {
-      router.push('/game')
+      router.push('/games')
       localStorage.setItem("user-name", formData.user_name)
 
     } catch (error) {

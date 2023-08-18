@@ -14,7 +14,10 @@ export default function Game() {
 
   //TESTES DE ROTAS
   const userName = localStorage.getItem("user-name")
-  if(userName === null) router.push('/')
+  if (userName === null) {
+  router.push('/')
+  return 
+  }
   
 
   const [lastGameName, setLastGameName] = useState<string>("");

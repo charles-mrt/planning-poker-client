@@ -48,7 +48,7 @@ export const useCreateGame = () => {
       setLoginFormModal(true)
     } else {
       handleGetGameInfo(gameId)
-      router.push('/game')
+      router.push('/games')
     }
   }
 
