@@ -1,10 +1,11 @@
 
 import { Button } from '../Button'
 import { useCreateUserName } from '../../hooks/useCreateUserName'
+import { ErrorMessage } from '../ErrorMessage'
 
 export const UserCreationModal = () => {
 
-  const { register, handleSubmit, errors, handleCreateUserName } = useCreateUserName()
+  const { register, handleSubmit, errors, handleCreateUserName, errorMessage } = useCreateUserName()
 
   return (
 
@@ -29,8 +30,10 @@ export const UserCreationModal = () => {
           </div>
 
         </form>
+        
+        {errorMessage && <ErrorMessage message={errorMessage} />}
 
-      </div>
+      </div>      
     </div>
   )
 }

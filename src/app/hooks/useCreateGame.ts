@@ -17,6 +17,8 @@ export const useCreateGame = () => {
 
   const { handleGetGameInfo } = useGetGameInfo()
   const [loginFormModal, setLoginFormModal] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+
   const router = useRouter()
 
   const {
@@ -40,6 +42,7 @@ export const useCreateGame = () => {
 
     } catch (error) {
       console.error("error sending data to backend", error)
+      setErrorMessage("Erro interno, tente novamente")
     }
   }
 
@@ -57,6 +60,7 @@ export const useCreateGame = () => {
     handleSubmit,
     errors,
     handleCreateGame,
-    loginFormModal
+    loginFormModal,
+    errorMessage
   }
 }

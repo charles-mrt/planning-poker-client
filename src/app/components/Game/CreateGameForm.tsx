@@ -3,9 +3,10 @@
 import { Button } from '../Button'
 import { UserCreationModal } from '../Users/UserCreationModal'
 import { useCreateGame } from '../../hooks/useCreateGame'
+import { ErrorMessage } from '../ErrorMessage'
 
 export const CreateGameForm = () => {
-  const { register, handleSubmit, errors, handleCreateGame, loginFormModal } = useCreateGame()
+  const { register, handleSubmit, errors, handleCreateGame, loginFormModal, errorMessage } = useCreateGame()
 
   return (
     <>
@@ -28,6 +29,7 @@ export const CreateGameForm = () => {
       </form>
 
       {loginFormModal && <UserCreationModal />}
+      {errorMessage && <ErrorMessage message={errorMessage} />}
     </>
   )
 }
