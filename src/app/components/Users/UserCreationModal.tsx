@@ -1,11 +1,11 @@
 
 import { Button } from '../Button'
-import { useCreateUserName } from '../../hooks/useCreateUserName'
+import { useCreateUser } from '@/app/hooks/useCreateUser'
 import { ErrorMessage } from '../ErrorMessage'
 
 export const UserCreationModal = () => {
 
-  const { register, handleSubmit, errors, handleCreateUserName, errorMessage } = useCreateUserName()
+  const { register, handleSubmit, errors, handleCreateUserName, errorMessage } = useCreateUser()
 
   return (
 

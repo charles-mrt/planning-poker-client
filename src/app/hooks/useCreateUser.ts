@@ -1,12 +1,9 @@
-
 import { useRouter } from 'next/navigation'
-
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-
-import api from '@/app/api/api'
 import { useState } from 'react'
+import { createUser } from '../service/user/createUser'
 
 const createUserNameFormSchema = z.object({
   'user_name': z.string().min(2, "Mínimo 2 caracteres").max(10, "Máximo 10 caracteres")
@@ -14,8 +11,9 @@ const createUserNameFormSchema = z.object({
 
 type CreateUserNameFormData = z.infer<typeof createUserNameFormSchema>
 
-
-export const useCreateUserName = () => {
+export const useCreateUser = () => {
+  const router = useRouter()
+  const [errorMessage, setErrorMessage] = useState('')
 
   const {
     register,
@@ -24,29 +22,16 @@ export const useCreateUserName = () => {
   } = useForm<CreateUserNameFormData>({
     resolver: zodResolver(createUserNameFormSchema)
   })
-  
-  const router = useRouter()
-
-  const [errorMessage, setErrorMessage] = useState('')
-  
 
   const handleCreateUserName = async (formData: CreateUserNameFormData) => {
-    
-    try {
-      const response = await api.post('/players', {
-        name: formData.user_name
-      })
-      
-      if (response.status === 201) {
-        router.push('/games')
-        localStorage.setItem("user-name", formData.user_name)
-      }
+    const success = await createUser(formData);
 
-    } catch (error) {
-      console.error("error sending data to backend", error)
-      setErrorMessage("Erro interno, tente novamente")
-    }
+    if (!success) return setErrorMessage("Erro interno, tente novamente");
+
+    router.push('/games');
+    localStorage.setItem("user-name", formData.user_name);
   }
+
   return {
     register,
     handleSubmit,

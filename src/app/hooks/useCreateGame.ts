@@ -1,11 +1,10 @@
 import { useRouter } from 'next/navigation'
-import api from '@/app/api/api'
 import { useForm } from 'react-hook-form'
-
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
-import { useGetGameInfo } from './useGetGameInfo'
+import { useGetGameInfo } from '../service/game/getGameInfo'
+import { createGame } from '../service/game/createGame'
 
 const createGameFormSchema = z.object({
   'game_name': z.string().max(60, "Máximo 60 caracteres")
@@ -14,7 +13,6 @@ const createGameFormSchema = z.object({
 type CreateGameFormData = z.infer<typeof createGameFormSchema>
 
 export const useCreateGame = () => {
-
   const { handleGetGameInfo } = useGetGameInfo()
   const [loginFormModal, setLoginFormModal] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -30,20 +28,11 @@ export const useCreateGame = () => {
   })
 
   const handleCreateGame = async (formData: CreateGameFormData) => {
-    try {
-      const response = await api.post('/games', {
-        name: formData.game_name
-      })
+    const gameId = await createGame(formData);
+    
+    if (!gameId) return setErrorMessage("Erro interno, tente novamente")
 
-      if (response.status === 201) {
-        const gameId = response.data.id
-        handleGameCreationSuccess(gameId)
-      }
-
-    } catch (error) {
-      console.error("error sending data to backend", error)
-      setErrorMessage("Erro interno, tente novamente")
-    }
+    handleGameCreationSuccess(gameId)
   }
 
   const handleGameCreationSuccess = (gameId: string) => {
