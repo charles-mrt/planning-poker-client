@@ -1,7 +1,7 @@
 
 import { Button } from '../Button'
-import { useCreateUser } from '@/app/hooks/useCreateUser'
-import { ErrorMessage } from '../ErrorMessage'
+import { useCreateUser } from '@/app/hooks/user/use-create-user'
+import { ErrorMessage } from '../Error-message'
 
 export const UserCreationModal = () => {
 

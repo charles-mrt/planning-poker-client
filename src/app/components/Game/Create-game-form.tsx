@@ -1,9 +1,9 @@
 'use client'
 
 import { Button } from '../Button'
-import { UserCreationModal } from '../Users/UserCreationModal'
-import { useCreateGame } from '@/app/hooks/useCreateGame'
-import { ErrorMessage } from '../ErrorMessage'
+import { UserCreationModal } from '../Users/User-creation-modal'
+import { useCreateGame } from '@/app/hooks/game/use-create-game'
+import { ErrorMessage } from '../Error-message'
 
 export const CreateGameForm = () => {
   const { register, handleSubmit, errors, handleCreateGame, loginFormModal, errorMessage } = useCreateGame()

@@ -1,5 +1,3 @@
-
-
 interface CardProps {
   name?: string
   isSelected: boolean

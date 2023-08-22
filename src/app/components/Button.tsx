@@ -1,6 +1,6 @@
 interface ButtonProps {
-  name: string;
-  onClickHandler?: () => void;
+  name: string
+  onClickHandler?: () => void
 }
 
 export const Button = ({ name, onClickHandler }: ButtonProps) => {

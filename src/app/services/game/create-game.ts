@@ -1,10 +1,10 @@
 import api from '@/app/api/api'
 
-interface CreateGameForm {
+interface GameProps {
   game_name: string
 }
 
-export const createGame = async (formData: CreateGameForm) => {
+export const createGame = async (formData: GameProps) => {
   try {
     const response = await api.post('/games', {
       name: formData.game_name
@@ -13,7 +13,6 @@ export const createGame = async (formData: CreateGameForm) => {
     if (response.status === 201) {
       return response.data.id
     }
-    return null
     
   } catch (error) {
     console.error("error sending data to backend", error)

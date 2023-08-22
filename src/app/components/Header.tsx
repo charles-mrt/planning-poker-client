@@ -3,8 +3,8 @@ import Image from 'next/image'
 import logo from '/public/assets/logo.svg'
 import { Dices, User } from 'lucide-react'
 interface HeaderProps {
-  userName?: string | null;
-  gameName?: string;
+  userName?: string
+  gameName?: string
 }
 
 export const Header = ({ userName, gameName }: HeaderProps) => {

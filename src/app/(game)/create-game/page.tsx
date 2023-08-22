@@ -1,4 +1,4 @@
-import { CreateGameForm } from '@/app/components/Game/CreateGameForm'
+import { CreateGameForm } from '@/app/components/Game/Create-game-form'
 import { Header } from '@/app/components/Header'
 
 export const metadata = { title: 'Criar jogo' }
