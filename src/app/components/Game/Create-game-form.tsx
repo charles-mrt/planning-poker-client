@@ -6,7 +6,7 @@ import { useCreateGame } from '@/app/hooks/game/use-create-game'
 import { ErrorMessage } from '../Error-message'
 
 export const CreateGameForm = () => {
-  const { register, handleSubmit, errors, handleCreateGame, loginFormModal, errorMessage } = useCreateGame()
+  const { handleSubmit, handleCreateGame, register, errors, loginFormModal, errorMessage } = useCreateGame()
 
   return (
     <>
