@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import { Header } from './components/Header'
+import { Buttonlink } from './components/ButtonLink'
 
 
 export const metadata = { title: 'Planning Poker' }
@@ -16,10 +16,8 @@ export default function Home() {
           <h1 className="text-purple-700 font-bold">Planning Poker</h1>
         </div>
 
-        <Link href="/create-game" className="w-96 bg-violet-700 rounded-md border-violet-700 py-4 px-6 text-white font-bold text-base text-center hover:bg-violet-800 transition-colors">
-          Iniciar um jogo
-        </Link>
-
+        <Buttonlink url='/create-game' text='Iniciar um jogo' />
+        
         <p className="text-base text-gray-500">Desfrute de uma jornada produtiva e divertida com nossa ferramenta!
           <a className="font-bold text-violet-600 cursor-not-allowed"> Saiba mais</a>
         </p>
