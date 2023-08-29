@@ -2,6 +2,7 @@ import './globals.css'
 import { Titillium_Web } from 'next/font/google'
 import { Footer } from './components/Footer'
 import Head from './head'
+import { GameProvider } from './context/Game-context'
 
 const titillium = Titillium_Web({
   subsets: ['latin'],
@@ -29,10 +30,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Head />
-      <body 
-        className={`${titillium.variable} font-sans w-screen h-screen flex flex-col justify-between items-center bg-white overflow-x-hidden` }>
+      <body
+        className={`${titillium.variable} font-sans w-screen h-screen flex flex-col justify-between items-center bg-white overflow-x-hidden`}>
         <div className="max-w-[1366px] h-full">
-          {children}
+          <GameProvider>
+            {children}
+          </GameProvider>
           <Footer />
         </div>
       </body>
