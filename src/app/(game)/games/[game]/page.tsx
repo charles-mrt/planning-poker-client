@@ -50,13 +50,11 @@ export default function Game() {
 
   const handleCardClick = () => {
     setIsCardSelected(true)
-    console.log('Card clicked - isCardSelected: ' + isCardSelected);
   }
 
 
   useEffect(() => {
     showModal()
-    console.log("isCardSelected " + isCardSelected)
   }, [isCardSelected])
 
 
