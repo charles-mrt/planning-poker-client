@@ -7,12 +7,12 @@ interface CardProps {
 export const Card = ({ name, isSelected, onCardClick }: CardProps) => {
   return (
     <div
-      className={`${
-        isSelected ? "bg-indigo-200 -translate-y-2 " : "bg-transparent"
-      } w-11 h-20 rounded-md border-2 border-indigo-600 text-indigo-600 ease-in duration-150 flex items-center justify-center text-xl uppercase`}
+      className={`${isSelected ? "bg-indigo-200 -translate-y-2 " : "bg-transparent"
+        } w-10 h-20 rounded-md border-2 border-indigo-600 text-indigo-600 ease-in duration-150 flex items-center justify-center text-xl uppercase cursor-pointer`}
       onClick={onCardClick}
     >
       {name}
     </div>
   )
 }
+
