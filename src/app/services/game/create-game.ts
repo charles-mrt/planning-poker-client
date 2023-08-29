@@ -11,7 +11,9 @@ export const createGame = async (formData: GameProps) => {
     })
 
     if (response.status === 201) {
-      return response.data.id
+      const gameId = response.data.id 
+      const gameName = response.data.name      
+      return {gameId, gameName}
     }
     
   } catch (error) {
