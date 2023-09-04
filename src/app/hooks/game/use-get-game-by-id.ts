@@ -9,7 +9,7 @@ interface useGetGameByIdProps {
   isLoading?: boolean
 }
 
-export const useGetGameById = ({ gameId, gameName, gameUrl, gamePlayers }: useGetGameByIdProps) => {
+export const useGetGameById = ({ gameId, gameName, gameUrl, gamePlayers}: useGetGameByIdProps) => {
 
   const { data: game, error, isValidating, } = useSWRConfig(`${gameId}`, getGameById)
 
@@ -17,7 +17,6 @@ export const useGetGameById = ({ gameId, gameName, gameUrl, gamePlayers }: useGe
   gameName = game?.name
   gameUrl = game?.url
   gamePlayers = game?.players
-
   return {
     gameId: gameId,
     gameName: gameName,
@@ -29,3 +28,4 @@ export const useGetGameById = ({ gameId, gameName, gameUrl, gamePlayers }: useGe
   }
 
 }
+
