@@ -28,14 +28,17 @@ export const useCreateUser = () => {
 
   const handleCreateUserName = async (formData: CreateUserNameFormData, urlGameId: string) => {
 
-    const success = await createUser({
+    const response = await createUser({
       user_name: formData.user_name,
       gameId: gameId ?? urlGameId
     })
 
-    if (!success) return setErrorMessage("Erro interno, tente novamente")
+    if (!response?.success) return setErrorMessage("Erro interno, tente novamente")
 
-    localStorage.setItem('user-name', formData.user_name)
+    localStorage.setItem('user-name', response.userName)
+    localStorage.setItem('user-id', response.userId)
+    localStorage.setItem('user-vote', response.userVote)
+    
     await redirectToGame()
   }
 
