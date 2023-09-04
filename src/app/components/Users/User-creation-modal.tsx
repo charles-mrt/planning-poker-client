@@ -31,7 +31,7 @@ export const UserCreationModal = ({ urlGameId, isActived, onUserCreated }: GameD
   }
   return (
 
-    <div className="w-screen h-screen bg-zinc-900/70 absolute top-0 flex items-center justify-center">
+    <div className="w-screen h-screen bg-zinc-900/70 absolute z-50 top-0 flex items-center justify-center">
       <div className="min-w-96 h-96 p-8 bg-white drop-shadow-lg rounded-md border-0 flex flex-col items-center justify-center gap-11">
 
         <div className="text-4xl text-gray-800">Escolha seu nome de usuário</div>
