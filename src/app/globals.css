@@ -6,4 +6,16 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizedLegibility;
  }
- 
+  
+ #flip-card {
+  transition: .5s;
+  transform: rotateY(180deg);
+ }
+
+.custom-transition {
+  animation: fadein .3s ease-in alternate;
+}
+@keyframes fadein {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
