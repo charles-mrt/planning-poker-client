@@ -57,6 +57,7 @@ export const useCreateGame = () => {
 
     setGameId(gameId)
     setGameName(gameName)
+    localStorage.setItem('game-id', gameId)
   }
 
   const redirectToGame = (gameId: string) => router.push(`/games/${gameId}`)
