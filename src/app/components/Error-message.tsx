@@ -1,7 +1,7 @@
 import { AlertTriangle } from "lucide-react"
 
 interface ErrorMessageProps {
-  message: string;
+  message: string
 }
 export const ErrorMessage = ({ message }: ErrorMessageProps) => {
   return (
