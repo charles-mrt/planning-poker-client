@@ -4,7 +4,7 @@ import { Card } from './Card'
 
 
 interface CardNamesProps {
-  cardSelected?: () => void
+  cardSelected?: (cardName: string) => void
 }
 
 export const CardNames = ({ cardSelected }: CardNamesProps) => {
@@ -13,10 +13,11 @@ export const CardNames = ({ cardSelected }: CardNamesProps) => {
 
   const handleCardClick = (cardName: string) => {
     if (selectedCard !== "") setSelectedCard(cardName)
+    if (cardSelected) cardSelected(cardName)
   }
 
   return (
-    <div className="grid grid-cols-4 grid-rows-2 gap-5 w-52" onClick={cardSelected}>
+    <div className="grid grid-cols-4 grid-rows-2 gap-5 w-52" >
       {cardNames.map((cardName, index) => (
         <Card
           key={index}
