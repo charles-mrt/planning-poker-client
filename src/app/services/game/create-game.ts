@@ -12,12 +12,11 @@ export const createGame = async (formData: GameProps) => {
 
     if (response.status === 201) {
       const gameId = response.data.id 
-      const gameName = response.data.name      
+      const gameName = response.data.name    
       return {gameId, gameName}
     }
-    
   } catch (error) {
-    console.error("error sending data to backend", error)
-    throw new Error("Erro interno, tente novamente")
+    console.error('(create game) error sending data to backend', error)
+    throw new Error('Erro interno, tente novamente')
   }
 }

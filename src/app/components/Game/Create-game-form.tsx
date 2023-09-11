@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '../Button'
-import { UserCreationModal } from '../Users/User-creation-modal'
+import { AddPlayerModal } from '../Players/Add-player-modal'
 import { useCreateGame } from '@/app/hooks/game/use-create-game'
 import { ErrorMessage } from '../Error-message'
 
@@ -28,7 +28,7 @@ export const CreateGameForm = () => {
         </div>
       </form>
 
-      {loginFormModal && <UserCreationModal />}
+      {loginFormModal && <AddPlayerModal />}
       {errorMessage && <ErrorMessage message={errorMessage} />}
     </>
   )

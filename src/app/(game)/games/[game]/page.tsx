@@ -4,16 +4,15 @@ import React, { useEffect, useState } from 'react'
 
 import { Header } from '@/app/components/Header'
 import { ErrorMessage } from '@/app/components/Error-message'
-import { UserCreationModal } from '@/app/components/Users/User-creation-modal'
+import { AddPlayerModal } from '@/app/components/Players/Add-player-modal'
 import { GameNotFound } from '@/app/components/Game/Game-not-found'
-import { ConditionalButton } from '@/app/components/Game/Conditional-button'
+import { GameCardRevealButton } from '@/app/components/Game/Game-card-reveal-button'
 import { PlayersVotedCard } from '@/app/components/Card/Players-voted-card'
-import { CardsVoted } from '@/app/components/Card/Cards-voted'
+import { CardsContaniner } from '@/app/components/Card/Cards-container'
 
 import { useGameContext } from '@/app/context/Game-context'
-
 import { useGetGameById } from '@/app/hooks/game/use-get-game-by-id'
-import { handleUserVote } from '@/app/hooks/user/use-create-user-vote'
+import { addPlayerVote } from '@/app/services/player/add-player-vote'
 
 interface Player {
   name: string
@@ -22,14 +21,13 @@ interface Player {
 
 export default function Game() {
 
-  const [voteCounts, setVoteCounts] = useState<{ [vote: string]: number }>({})
   const [loginFormModal, setLoginFormModal] = useState(false)
   const [isCardSelected, setIsCardSelected] = useState(false)
-  const [isCardRevealed, setIsCardRevealed] = useState(false)
   const [cardValue, setIscardValue] = useState("")
 
-  const { gameId: gameIdFromContext } = useGameContext()
-  const userName = localStorage.getItem('user-name')
+  const { gameId: gameIdFromContext, isCardRevealed, setIsCardRevealed } = useGameContext()
+
+  const playerName: string | null = localStorage.getItem('player-name')
 
   const getGameIdFromUrl = () => {
     const pathnameArray = window.location.pathname.split('/')
@@ -41,53 +39,45 @@ export default function Game() {
   const {
     gameId,
     gameName,
-    gameUrl,
     gamePlayers,
     isLoading,
     isError,
+    gameVotes,
+    isValidating
   } = useGetGameById({ gameId: gameIdFromContext ?? gameIdFromUrl })
 
+  localStorage.setItem('game-id', gameId)
+
   const showModal = () => {
-    if (userName === null) setLoginFormModal(true)
+    if (playerName === null) setLoginFormModal(true)
   }
 
   const handleCardRevealed = () => {
-    setIsCardRevealed(true)
-    handleUserVote()
-    cardsVoted()
+    if (!isValidating) setIsCardRevealed(true)
   }
+
 
   const getCardValue = (value: string) => {
     setIscardValue(value)
     setIsCardSelected(true)
   }
 
-  const updateUserVote = () => {
-    if (cardValue !== "") localStorage.setItem('user-vote', cardValue)
+  const updatePlayerVote = () => {
+    if (cardValue !== "") localStorage.setItem('player-vote', cardValue)
   }
 
   const eraseVote = () => {
     setIsCardRevealed(false)
     setIsCardSelected(false)
     setIscardValue("")
-    localStorage.setItem('user-vote', "")
-  }
-
-  const cardsVoted = () => {
-    const newVoteCounts: { [vote: string]: number } = {}
-    gamePlayers?.forEach((player: Player) => {
-      if (newVoteCounts[player.vote]) {
-        newVoteCounts[player.vote]++
-      } else {
-        newVoteCounts[player.vote] = 1
-      }
-    })
-    setVoteCounts(newVoteCounts)
+    localStorage.setItem('player-vote', "")
+    const playerIdFromStorage: string = localStorage.getItem('player-id') as string
+    addPlayerVote({ gameId, playerId: playerIdFromStorage, vote: "" })
   }
 
   useEffect(() => {
     showModal()
-    updateUserVote()
+    updatePlayerVote()
 
   }, [isCardSelected, cardValue])
 
@@ -99,11 +89,11 @@ export default function Game() {
       </div>
     )
 
-  if (!gameId) return <GameNotFound />
+  if (!gameId) return <GameNotFound gameId={gameIdFromUrl} />
 
   return (
     <div className="w-full h-full">
-      <Header userName={userName ?? ""} gameName={gameName} />
+      <Header playerName={playerName ?? ""} gameName={gameName} />
 
       <main className="h-full w-full flex flex-col items-center justify-center">
 
@@ -116,25 +106,31 @@ export default function Game() {
           <>
 
             {loginFormModal && (
-              <UserCreationModal
+              <AddPlayerModal
                 urlGameId={getGameIdFromUrl()}
-                onUserCreated={() => setLoginFormModal(false)}
+                onPlayerAdded={() => setLoginFormModal(false)}
               />
             )}
 
-            <div className="flex flex-col items-center">
-              <div className="h-32 flex items-center">
-                <h1 className="text-4xl text-gray-800">
-                  {!isCardSelected ? "Selecione suas cartas!" : ""}
-                </h1>
+            <div className="flex flex-col items-center relative">
 
-                {isCardSelected && (
-                  <ConditionalButton
-                    cardRevealed={isCardRevealed}
+              <div className="h-32 flex items-center">
+
+                {!isCardSelected ? (
+
+                  <h1 className="text-4xl text-gray-800">
+                    Selecione suas cartas!
+                  </h1>
+
+                ) : (
+
+                  <GameCardRevealButton
                     handleCardRevealed={handleCardRevealed}
                     handleEraseVote={eraseVote}
                   />
+
                 )}
+
               </div>
 
               <ul className="my-4 flex items-start justify-around">
@@ -143,7 +139,7 @@ export default function Game() {
                     return (
                       <li key={index} className='flex flex-col items-center mx-2'>
                         <PlayersVotedCard
-                          cardRevealed={isCardRevealed}
+                          cardRevealed={isCardRevealed ?? false}
                           playerVote={gamePlayer.vote}
                           playerName={gamePlayer.name}
                         />
@@ -153,14 +149,13 @@ export default function Game() {
                 }
               </ul>
 
-              <CardsVoted
-                cardRevealed={isCardRevealed}
-                voteCounts={voteCounts}
+              <CardsContaniner
+                cardRevealed={isCardRevealed ?? false}
                 cardValue={getCardValue}
+                gameVotes={gameVotes ?? []}
               />
 
             </div>
-
           </>
         )}
 
@@ -169,4 +164,3 @@ export default function Game() {
     </div>
   )
 }
-

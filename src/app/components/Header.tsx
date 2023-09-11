@@ -2,12 +2,13 @@
 import Image from 'next/image'
 import logo from '/public/assets/logo.svg'
 import { Dices, User } from 'lucide-react'
+
 interface HeaderProps {
-  userName?: string
+  playerName?: string
   gameName?: string
 }
 
-export const Header = ({ userName, gameName }: HeaderProps) => {
+export const Header = ({ playerName, gameName }: HeaderProps) => {
 
   return (
     <header className="w-full max-h-16 bg-white p-2 flex items-start justify-between absolute left-0 top-0">
@@ -26,9 +27,9 @@ export const Header = ({ userName, gameName }: HeaderProps) => {
 
       </div>
 
-      {userName &&
+      {playerName &&
         <span className="flex items-center gap-1">
-          {userName}
+          {playerName}
           <User size={16} strokeWidth={1} />
         </span>
       }

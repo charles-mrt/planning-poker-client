@@ -1,3 +1,4 @@
+// import useSWR from 'swr'
 import api from '@/app/api/api'
 
 interface Player {
@@ -11,6 +12,7 @@ interface GameProps {
   name: string
   url: string
   players: Player[]
+  votes: (string | null)[]
 }
 export const getGameById = async (id:string): Promise<GameProps | null | any> => {
 
@@ -18,15 +20,24 @@ export const getGameById = async (id:string): Promise<GameProps | null | any> =>
   try {
     const response = await api.get(`/games/${id}`)
 
+ 
     if (response.status === 200) {
-      const games: GameProps[] = response.data
-      
-      const game = games.find((game) => game.id === id)
-      
-      if (game) return game      
+      const responseData = response.data
+      const votes = responseData.players.map((player: Player) => player.vote)
+
+      const gameData: GameProps = {
+        id: responseData.id,
+        name: responseData.name,
+        url: responseData.url,
+        players: responseData.players,
+        votes: votes,
+      }
+     
+      return gameData
     }
+
   } catch (error) {
-    console.log("Error getting game with ID")
+    console.log("(error get game) Error getting game with ID")
   }
   
 }

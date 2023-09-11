@@ -10,9 +10,9 @@ interface GameDataProps {
   gameId: string
   gameName: string
 }
-
+const MAX_LENGTH  = 60
 const createGameFormSchema = z.object({
-  'game_name': z.string().max(60, "Máximo 60 caracteres")
+  'game_name': z.string().max(MAX_LENGTH, `Máximo ${MAX_LENGTH} caracteres`)
 })
 
 type CreateGameFormData = z.infer<typeof createGameFormSchema>
@@ -49,12 +49,15 @@ export const useCreateGame = () => {
 
   const handleGameCreationSuccess = async ({ gameId, gameName }: GameDataProps) => {
 
-    const userName = localStorage.getItem('user-name')
+    const playerName = localStorage.getItem('player-name')
 
-    userName === null
-      ? setLoginFormModal(true)
-      : redirectToGame(gameId)
+    // playerName === null
+    //   ? setLoginFormModal(true)
+    //   : redirectToGame(gameId)
 
+   
+    setLoginFormModal(true)
+    
     setGameId(gameId)
     setGameName(gameName)
     localStorage.setItem('game-id', gameId)
