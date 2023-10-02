@@ -5,12 +5,13 @@ import { useState } from 'react'
 import { createGame } from '../../services/game/create-game'
 import { useGameContext } from '@/app/context/Game-context'
 import { useRouter } from 'next/navigation'
+import { autoRegisterPlayerNameIfStored } from '../player/auto-register-player-name-if-stored'
 
 interface GameDataProps {
   gameId: string
   gameName: string
 }
-const MAX_LENGTH  = 60
+const MAX_LENGTH = 60
 const createGameFormSchema = z.object({
   'game_name': z.string().max(MAX_LENGTH, `Máximo ${MAX_LENGTH} caracteres`)
 })
@@ -49,15 +50,23 @@ export const useCreateGame = () => {
 
   const handleGameCreationSuccess = async ({ gameId, gameName }: GameDataProps) => {
 
-    const playerName = localStorage.getItem('player-name')
+    const playerNameFromStorage: string = localStorage.getItem('player-name') as string
+    const playerIdFromStorage: string = localStorage.getItem('player-id') as string
 
-    // playerName === null
-    //   ? setLoginFormModal(true)
-    //   : redirectToGame(gameId)
+    if (playerNameFromStorage === null) {
 
-   
-    setLoginFormModal(true)
-    
+      setLoginFormModal(true)
+
+    } else {
+      autoRegisterPlayerNameIfStored({
+        playerNameFromStorage,
+        playerIdFromStorage,
+        gameIdFromUrl: gameId,
+      })
+
+      redirectToGame(gameId)
+    }
+
     setGameId(gameId)
     setGameName(gameName)
     localStorage.setItem('game-id', gameId)

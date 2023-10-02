@@ -1,35 +1,28 @@
-import { getGameById } from "@/app/services/game/get-game-by-id"
-import useSWRConfig from "swr"
+import { getGameById } from "@/app/services/game/get-game-by-id";
 
-interface useGetGameByIdProps {
-  gameId: string
-  gameName?: string
-  gameUrl?: string
-  gamePlayers?: []
-  gameVotes?: (string | null)[] 
-  isLoading?: boolean
+interface GameData {
+  gameId: string;
+  gameName?: string;
+  gameUrl?: string;
+  gamePlayers?: [];
+  gameVotes?: (string | null)[];
 }
 
-export const useGetGameById = ({ gameId, gameName, gameUrl, gamePlayers, gameVotes}: useGetGameByIdProps) => {
+export const useGetGameById = async ({ gameId }: { gameId: string }): Promise<GameData | null> => {
 
-  const { data: game, error, isValidating, } = useSWRConfig(`${gameId}`, getGameById, { refreshInterval: 1000 })
-  
-  gameId = game?.id
-  gameName = game?.name
-  gameUrl = game?.url
-  gamePlayers = game?.players
-  gameVotes = game?.votes
-  
-  return {
-    gameId: gameId,
-    gameName: gameName,
-    gameUrl: gameUrl,
-    gamePlayers: gamePlayers,
-    gameVotes: gameVotes,
-    isLoading: !error && !game,
-    isError: error,
-    isValidating
+  try {
+    const response = await getGameById(gameId)
+
+    return {
+      gameId: response.id,
+      gameName: response.name,
+      gameUrl: response.url,
+      gamePlayers: response.players,
+      gameVotes: response.votes,
+    }
+
+  } catch (error) {
+    console.error("Erro ao buscar jogo por ID:", error)
+    return null
   }
-
 }
-

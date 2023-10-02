@@ -3,16 +3,19 @@
 import React, { useEffect, useState } from 'react'
 
 import { Header } from '@/app/components/Header'
-import { ErrorMessage } from '@/app/components/Error-message'
 import { AddPlayerModal } from '@/app/components/Players/Add-player-modal'
 import { GameNotFound } from '@/app/components/Game/Game-not-found'
 import { GameCardRevealButton } from '@/app/components/Game/Game-card-reveal-button'
 import { PlayersVotedCard } from '@/app/components/Card/Players-voted-card'
 import { CardsContaniner } from '@/app/components/Card/Cards-container'
+import { Spinner } from '@/app/components/Spinner'
 
 import { useGameContext } from '@/app/context/Game-context'
 import { useGetGameById } from '@/app/hooks/game/use-get-game-by-id'
 import { addPlayerVote } from '@/app/services/player/add-player-vote'
+import socket from '@/app/api/socket/auth'
+import { autoRegisterPlayerNameIfStored } from '@/app/hooks/player/auto-register-player-name-if-stored'
+
 
 interface Player {
   name: string
@@ -25,9 +28,19 @@ export default function Game() {
   const [isCardSelected, setIsCardSelected] = useState(false)
   const [cardValue, setIscardValue] = useState("")
 
+  const [gameData, setGameData] = useState({
+    gameId: '',
+    gameName: '',
+    gameUrl: '',
+    gamePlayers: [],
+    gameVotes: [],
+  })
+
   const { gameId: gameIdFromContext, isCardRevealed, setIsCardRevealed } = useGameContext()
 
-  const playerName: string | null = localStorage.getItem('player-name')
+  const playerNameFromStorage: string = localStorage.getItem('player-name') as string
+
+
 
   const getGameIdFromUrl = () => {
     const pathnameArray = window.location.pathname.split('/')
@@ -36,27 +49,38 @@ export default function Game() {
   }
   const gameIdFromUrl = getGameIdFromUrl()
 
-  const {
-    gameId,
-    gameName,
-    gamePlayers,
-    isLoading,
-    isError,
-    gameVotes,
-    isValidating
-  } = useGetGameById({ gameId: gameIdFromContext ?? gameIdFromUrl })
+  async function fetchData() {
+    const data = await useGetGameById({ gameId: gameIdFromContext ?? gameIdFromUrl });
+    if (data) {
+      setGameData(data)
+    }
+  }
+
+  const playerIdFromStorage: string = localStorage.getItem('player-id') as string
+
+
+  const gameId = gameData.gameId
+  const gameVotes = gameData.gameVotes
+  const gamePlayers = gameData.gamePlayers
+  const gameName = gameData.gameName
 
   localStorage.setItem('game-id', gameId)
 
-  const showModal = () => {
-    if (playerName === null) setLoginFormModal(true)
+  const showRegisterPlayerNameModal = () => {
+    if (playerNameFromStorage === null) {
+      setLoginFormModal(true)
+    } else {
+      autoRegisterPlayerNameIfStored({
+        playerNameFromStorage,
+        playerIdFromStorage,
+        gameIdFromUrl,
+      })
+    }
   }
 
   const handleCardRevealed = () => {
-    if (!isValidating) setIsCardRevealed(true)
+    setIsCardRevealed(true)
   }
-
-
   const getCardValue = (value: string) => {
     setIscardValue(value)
     setIsCardSelected(true)
@@ -66,101 +90,137 @@ export default function Game() {
     if (cardValue !== "") localStorage.setItem('player-vote', cardValue)
   }
 
-  const eraseVote = () => {
-    setIsCardRevealed(false)
-    setIsCardSelected(false)
-    setIscardValue("")
-    localStorage.setItem('player-vote', "")
-    const playerIdFromStorage: string = localStorage.getItem('player-id') as string
-    addPlayerVote({ gameId, playerId: playerIdFromStorage, vote: "" })
+  const eraseVote = () => { socket.emit('start-new-votation', true) }
+
+  socket.on('start-new-votation', (value) => {
+    if (value) {
+      addPlayerVote({ gameId, playerId: playerIdFromStorage, vote: null })
+      setIsCardRevealed(false)
+      setIsCardSelected(false)
+      setIscardValue("")
+      localStorage.setItem('player-vote', "")
+    }
+  });
+
+
+  const [playersData, setPlayersData] = useState<Player[]>([]);
+
+  const emitPlayerJoin = (gameId: string, playerName: string,) => {
+    socket.emit('enter-game-board', gameId, playerName);
+
+    socket.on('update-game', (game) => {
+      if (game && game.players) {
+        const playerData = game.players.map(player => ({
+          name: player.name,
+          vote: player.vote,
+        }));
+        playerData.forEach(player => {
+          if (player.vote !== null) {
+            setIsCardSelected(true)
+          }
+        })
+        setPlayersData(playerData);
+      }
+    });
+
   }
 
+
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    showModal()
-    updatePlayerVote()
+    showRegisterPlayerNameModal();
+    if (playerNameFromStorage) {
+      emitPlayerJoin(gameIdFromContext ?? gameIdFromUrl, playerNameFromStorage);
+    }
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+  }, []);
 
-  }, [isCardSelected, cardValue])
 
+  useEffect(() => {
+    updatePlayerVote();
+    fetchData();
+  }, [isCardSelected, cardValue]);
 
-  if (isError)
-    return (
-      <div className="h-full flex items-center">
-        <ErrorMessage message='Ocorreu um erro ao carregar os dados. Tente novamente' />
-      </div>
-    )
-
-  if (!gameId) return <GameNotFound gameId={gameIdFromUrl} />
 
   return (
-    <div className="w-full h-full">
-      <Header playerName={playerName ?? ""} gameName={gameName} />
+    <> {isLoading ? (
 
-      <main className="h-full w-full flex flex-col items-center justify-center">
+      <Spinner />
 
-        {isLoading ? (
+    ) : (
 
-          <p>Carregando o jogo...</p>
+      <>
+        {!gameId ? (
+
+          <GameNotFound gameId={gameIdFromUrl} />
 
         ) : (
 
-          <>
+          <div className="w-full h-full">
+            <Header playerName={playerNameFromStorage ?? ""} gameName={gameName} />
 
-            {loginFormModal && (
-              <AddPlayerModal
-                urlGameId={getGameIdFromUrl()}
-                onPlayerAdded={() => setLoginFormModal(false)}
-              />
-            )}
+            <main className="h-full w-full flex flex-col items-center justify-center">
 
-            <div className="flex flex-col items-center relative">
+              {loginFormModal && (
+                <AddPlayerModal
+                  urlGameId={getGameIdFromUrl()}
+                  onPlayerAdded={() => setLoginFormModal(false)}
+                />
+              )}
 
-              <div className="h-32 flex items-center">
+              <div className="flex flex-col items-center relative">
+                <div className="h-32 flex items-center">
 
-                {!isCardSelected ? (
+                  {!isCardSelected ? (
 
-                  <h1 className="text-4xl text-gray-800">
-                    Selecione suas cartas!
-                  </h1>
+                    <h1 className="text-4xl text-gray-800">
+                      Selecione suas cartas!
+                    </h1>
 
-                ) : (
+                  ) : (
 
-                  <GameCardRevealButton
-                    handleCardRevealed={handleCardRevealed}
-                    handleEraseVote={eraseVote}
-                  />
+                    <GameCardRevealButton
+                      handleCardRevealed={handleCardRevealed}
+                      handleEraseVote={eraseVote}
+                    />
 
-                )}
+                  )}
+
+                </div>
+
+                <ul className="my-4 flex items-start justify-around">
+                  {
+                    playersData?.map((player, index: number) => {
+                      return (
+                        <li key={index} className='flex flex-col items-center mx-2'>
+                          <PlayersVotedCard
+                            cardRevealed={isCardRevealed ?? false}
+                            playerVote={player.vote}
+                            playerName={player.name}
+                          />
+                        </li>
+                      )
+                    })
+                  }
+                </ul>
+
+                <CardsContaniner
+                  cardRevealed={isCardRevealed ?? false}
+                  cardValue={getCardValue}
+                  gameVotes={gameVotes ?? []}
+                />
 
               </div>
 
-              <ul className="my-4 flex items-start justify-around">
-                {
-                  gamePlayers?.map((gamePlayer: Player, index: number) => {
-                    return (
-                      <li key={index} className='flex flex-col items-center mx-2'>
-                        <PlayersVotedCard
-                          cardRevealed={isCardRevealed ?? false}
-                          playerVote={gamePlayer.vote}
-                          playerName={gamePlayer.name}
-                        />
-                      </li>
-                    )
-                  })
-                }
-              </ul>
 
-              <CardsContaniner
-                cardRevealed={isCardRevealed ?? false}
-                cardValue={getCardValue}
-                gameVotes={gameVotes ?? []}
-              />
+            </main>
 
-            </div>
-          </>
+          </div>
         )}
-
-      </main>
-
-    </div>
+      </>
+    )} </>
   )
 }

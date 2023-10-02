@@ -1,4 +1,4 @@
-import api from '@/app/api/api'
+import api from "@/app/api/axios/api"
 
 interface addPlayerVoteProps {
   gameId: string
@@ -10,7 +10,7 @@ export const addPlayerVote = async ({ gameId, playerId, vote }: addPlayerVotePro
 
   try {
     const playerVote = {
-      vote: `${vote}`
+      vote: vote
     }
     const response = await api.patch(`games/${gameId}/players/${playerId}/vote`, playerVote)
    

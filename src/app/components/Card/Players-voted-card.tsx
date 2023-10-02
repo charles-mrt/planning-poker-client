@@ -10,7 +10,7 @@ interface PlayersVotedCardProps {
 
 export const PlayersVotedCard = ({ cardRevealed, playerVote, playerName }: PlayersVotedCardProps) => {
   const isCardRevealed = useDelayedReveal(cardRevealed)
-  
+
   return (
     <div className="flex flex-col items-center">
       {!isCardRevealed ? (
@@ -36,7 +36,7 @@ export const PlayersVotedCard = ({ cardRevealed, playerVote, playerName }: Playe
         </div>
       )}
 
-      <span className="whitespace-pre-line  text-xs capitalize">
+      <span className="whitespace-pre-line text-xs capitalize">
         {playerName}
       </span>
 

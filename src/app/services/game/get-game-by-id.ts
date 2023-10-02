@@ -1,5 +1,4 @@
-// import useSWR from 'swr'
-import api from '@/app/api/api'
+import api from "@/app/api/axios/api"
 
 interface Player {
   id: string
@@ -16,10 +15,8 @@ interface GameProps {
 }
 export const getGameById = async (id:string): Promise<GameProps | null | any> => {
 
- 
   try {
     const response = await api.get(`/games/${id}`)
-
  
     if (response.status === 200) {
       const responseData = response.data

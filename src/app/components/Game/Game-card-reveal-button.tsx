@@ -1,6 +1,7 @@
 import { useGameContext } from "@/app/context/Game-context"
 import { Button } from "../Button"
 import { useEffect, useState } from "react"
+import socket from '@/app/api/socket/auth'
 
 interface gameCardRevealButtonProps {
   handleCardRevealed: () => void
@@ -13,9 +14,21 @@ export const GameCardRevealButton = ({ handleCardRevealed, handleEraseVote }: ga
   const [countdown, setCountdown] = useState(3)
 
   useEffect(() => {
+   
+    socket.on('reveal-game-votes', (value) => {
+      if (value)  handleCardRevealed(); 
+     
+    });
+    return () => {
+      socket.off('reveal-game-votes');
+    };
+  }, [handleCardRevealed]);
+
+  useEffect(() => {
     if (isCardRevealed) {
       setShowCountdown(true)
       setCountdown(3)
+      socket.emit('reveal-game-votes', true)
 
       const interval = setInterval(() => {
         setCountdown((prevCountdown) => prevCountdown - 1)

@@ -1,4 +1,4 @@
-import api from '@/app/api/api'
+import api from "@/app/api/axios/api"
 
 interface PlayerProps {
   id: string

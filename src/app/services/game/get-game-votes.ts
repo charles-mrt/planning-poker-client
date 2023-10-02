@@ -1,4 +1,4 @@
-import api from '@/app/api/api'
+import api from "@/app/api/axios/api"
 
 export const getGameVotes = async (gameId: string) => {
   try {

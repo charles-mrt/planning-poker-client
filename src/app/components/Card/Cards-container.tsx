@@ -65,7 +65,7 @@ export const CardsContaniner = ({ cardRevealed, cardValue, gameVotes }: CardsVot
             <div key={vote} className="flex flex-col items-center custom-transition">
 
               <Card name={vote} isSelected={findWinningVotes().includes(vote)} />
-
+              
               <span className="text-xs">
                 {`${voteCounts[vote]} ${voteCounts[vote] > 1 ? 'votos' : 'voto'}`}
               </span>
