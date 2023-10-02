@@ -198,8 +198,8 @@ export default function Game() {
                         <li key={index} className='flex flex-col items-center mx-2'>
                           <PlayersVotedCard
                             cardRevealed={isCardRevealed ?? false}
-                            playerVote={player.vote}
-                            playerName={player.name}
+                            playerVote={!isCardSelected ? player.vote = "" : player.vote}
+                            playerName={!isCardSelected ? player.name = "" : player.vote}
                           />
                         </li>
                       )
