@@ -5,17 +5,56 @@
 body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizedLegibility;
- }
-  
- #flip-card {
+}
+
+#flip-card {
   transition: .5s;
   transform: rotateY(180deg);
- }
+}
 
 .custom-transition {
   animation: fadein .3s ease-in alternate;
 }
+
 @keyframes fadein {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+
+@keyframes box-shadown-animation {
+  0% {
+    background-position: 0 0
+  }
+
+  50% {
+    background-position: 400% 0
+  }
+
+  to {
+    background-position: 0 0
+  }
+}
+
+.box-animation:after {
+  animation: box-shadown-animation 20s linear infinite;
+  background: linear-gradient(45deg, #f8f4ff, #dae6ff, #74b3ff, #3993ff, #3500d2, #3993ff, #74b3ff, #dae6ff, #f8f4ff);
+  background-size: 400%;
+  border-radius: 2px;
+  content: "";
+  filter: blur(5px);
+  height: calc(100% + 4px);
+  left: -2px;
+  opacity: 1;
+  position: absolute;
+  z-index: -1;
+  top: -2px;
+  transition: opacity .3s ease-in-out;
+  width: calc(100% + 4px);
+  z-index: -2;
 }
