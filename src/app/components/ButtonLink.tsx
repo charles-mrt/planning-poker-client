@@ -1,6 +1,5 @@
 import Link from "next/link"
 
-
 interface ButtonLinkProps {
   url: string
   text: string

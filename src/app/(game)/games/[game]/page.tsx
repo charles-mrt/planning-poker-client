@@ -12,9 +12,11 @@ import { Spinner } from '@/app/components/Spinner'
 
 import { useGameContext } from '@/app/context/Game-context'
 import { useGetGameById } from '@/app/hooks/game/use-get-game-by-id'
-import { addPlayerVote } from '@/app/services/player/add-player-vote'
+
 import socket from '@/app/api/socket/auth'
 import { autoRegisterPlayerNameIfStored } from '@/app/hooks/player/auto-register-player-name-if-stored'
+import { Confettis } from '@/app/components/Confettis'
+import { useGetGameIdFromUrl } from '@/app/hooks/game/use-get-game-id-by-url'
 
 
 interface Player {
@@ -22,13 +24,22 @@ interface Player {
   vote: string
 }
 
+type GameDataProps = {
+  gameId: string
+  gameName: string
+  gameUrl: string
+  gamePlayers: Player[]
+  gameVotes: string[]
+}
+
 export default function Game() {
 
   const [loginFormModal, setLoginFormModal] = useState(false)
   const [isCardSelected, setIsCardSelected] = useState(false)
-  const [cardValue, setIscardValue] = useState("")
+  const [playersData, setPlayersData] = useState<Player[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  const [gameData, setGameData] = useState({
+  const [gameData, setGameData] = useState<GameDataProps>({
     gameId: '',
     gameName: '',
     gameUrl: '',
@@ -38,33 +49,19 @@ export default function Game() {
 
   const { gameId: gameIdFromContext, isCardRevealed, setIsCardRevealed } = useGameContext()
 
-  const playerNameFromStorage: string = localStorage.getItem('player-name') as string
+  const playerNameFromStorage = localStorage.getItem('player-name')
+  const playerIdFromStorage = localStorage.getItem('player-id')
+  const gameIdFromUrl = useGetGameIdFromUrl()
 
-
-
-  const getGameIdFromUrl = () => {
-    const pathnameArray = window.location.pathname.split('/')
-    const gameIdIndex = pathnameArray.indexOf('games') + 1
-    return pathnameArray[gameIdIndex]
-  }
-  const gameIdFromUrl = getGameIdFromUrl()
 
   async function fetchData() {
-    const data = await useGetGameById({ gameId: gameIdFromContext ?? gameIdFromUrl });
+    const data = await useGetGameById({ gameId: gameIdFromContext ?? gameIdFromUrl }) as GameDataProps
     if (data) {
-      setGameData(data)
+      setGameData({
+        ...data
+      })
     }
   }
-
-  const playerIdFromStorage: string = localStorage.getItem('player-id') as string
-
-
-  const gameId = gameData.gameId
-  const gameVotes = gameData.gameVotes
-  const gamePlayers = gameData.gamePlayers
-  const gameName = gameData.gameName
-
-  localStorage.setItem('game-id', gameId)
 
   const showRegisterPlayerNameModal = () => {
     if (playerNameFromStorage === null) {
@@ -73,76 +70,59 @@ export default function Game() {
       autoRegisterPlayerNameIfStored({
         playerNameFromStorage,
         playerIdFromStorage,
-        gameIdFromUrl,
+        gameIdFromUrl: gameIdFromContext ?? gameIdFromUrl
       })
     }
   }
 
-  const handleCardRevealed = () => {
-    setIsCardRevealed(true)
-  }
-  const getCardValue = (value: string) => {
-    setIscardValue(value)
-    setIsCardSelected(true)
-  }
+  const handleCardRevealed = () => { setIsCardRevealed(true) }
 
-  const updatePlayerVote = () => {
-    if (cardValue !== "") localStorage.setItem('player-vote', cardValue)
-  }
+  const eraseVote = () => { socket.emit('clean-votes', gameData.gameId) }
+ 
 
-  const eraseVote = () => { socket.emit('start-new-votation', true) }
-
-  socket.on('start-new-votation', (value) => {
-    if (value) {
-      addPlayerVote({ gameId, playerId: playerIdFromStorage, vote: null })
+  socket.on('update-game', async (gameId, isClean) => {
+    if (!isClean) {
       setIsCardRevealed(false)
       setIsCardSelected(false)
-      setIscardValue("")
-      localStorage.setItem('player-vote', "")
     }
-  });
-
-
-  const [playersData, setPlayersData] = useState<Player[]>([]);
-
+  })
+ 
   const emitPlayerJoin = (gameId: string, playerName: string,) => {
-    socket.emit('enter-game-board', gameId, playerName);
-
+    socket.emit('enter-game-board', gameId, playerName)
+    setIsLoading(true)
     socket.on('update-game', (game) => {
+
       if (game && game.players) {
-        const playerData = game.players.map(player => ({
+        const playerData: [] = game.players.map((player: Player) => ({
           name: player.name,
           vote: player.vote,
-        }));
-        playerData.forEach(player => {
+        }))
+        playerData.forEach((player: Player) => {
           if (player.vote !== null) {
             setIsCardSelected(true)
           }
         })
-        setPlayersData(playerData);
+        setPlayersData(playerData)
+        setIsLoading(false)
       }
-    });
-
+    })
   }
 
-
-  const [isLoading, setIsLoading] = useState(true);
-
   useEffect(() => {
-    showRegisterPlayerNameModal();
     if (playerNameFromStorage) {
-      emitPlayerJoin(gameIdFromContext ?? gameIdFromUrl, playerNameFromStorage);
+      emitPlayerJoin(gameIdFromContext ?? gameIdFromUrl, playerNameFromStorage)
     }
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-  }, []);
-
+  }, [playerNameFromStorage])
 
   useEffect(() => {
-    updatePlayerVote();
-    fetchData();
-  }, [isCardSelected, cardValue]);
+    showRegisterPlayerNameModal()
+
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 3000)
+
+    fetchData()
+  }, [])
 
 
   return (
@@ -153,20 +133,20 @@ export default function Game() {
     ) : (
 
       <>
-        {!gameId ? (
+        {!gameData.gameId ? (
 
           <GameNotFound gameId={gameIdFromUrl} />
 
         ) : (
 
           <div className="w-full h-full">
-            <Header playerName={playerNameFromStorage ?? ""} gameName={gameName} />
+            <Header playerName={playerNameFromStorage ?? ""} gameName={gameData.gameName} />
 
             <main className="h-full w-full flex flex-col items-center justify-center">
 
               {loginFormModal && (
                 <AddPlayerModal
-                  urlGameId={getGameIdFromUrl()}
+                  urlGameId={gameIdFromUrl}
                   onPlayerAdded={() => setLoginFormModal(false)}
                 />
               )}
@@ -185,6 +165,7 @@ export default function Game() {
                     <GameCardRevealButton
                       handleCardRevealed={handleCardRevealed}
                       handleEraseVote={eraseVote}
+                      gameId={gameIdFromUrl}
                     />
 
                   )}
@@ -199,7 +180,7 @@ export default function Game() {
                           <PlayersVotedCard
                             cardRevealed={isCardRevealed ?? false}
                             playerVote={!isCardSelected ? player.vote = "" : player.vote}
-                            playerName={!isCardSelected ? player.name = "" : player.vote}
+                            playerName={player.name}
                           />
                         </li>
                       )
@@ -209,18 +190,18 @@ export default function Game() {
 
                 <CardsContaniner
                   cardRevealed={isCardRevealed ?? false}
-                  cardValue={getCardValue}
-                  gameVotes={gameVotes ?? []}
+                  gameVotes={gameData.gameVotes ?? []}
                 />
 
               </div>
 
-
             </main>
-
+            {isCardRevealed ? <Confettis /> : <></>}
           </div>
         )}
       </>
-    )} </>
+
+    )}
+    </>
   )
 }

@@ -3,7 +3,7 @@ import { getGameById } from "@/app/services/game/get-game-by-id";
 
 interface handlePlayerNameProps {
   playerNameFromStorage: string
-  playerIdFromStorage: string
+  playerIdFromStorage: string | null
   gameIdFromUrl: string
 }
 
@@ -32,4 +32,4 @@ export const autoRegisterPlayerNameIfStored = async ({ playerNameFromStorage, pl
     }
   }
 
-};
+}

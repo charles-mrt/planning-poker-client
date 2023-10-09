@@ -3,25 +3,25 @@ import card from '/public/assets/card-cover.png'
 import useDelayedReveal from "./hook/useDelayedReveal"
 
 interface PlayersVotedCardProps {
-  cardRevealed: boolean 
+  cardRevealed: boolean
   playerVote: string
   playerName: string
 }
 
 export const PlayersVotedCard = ({ cardRevealed, playerVote, playerName }: PlayersVotedCardProps) => {
   const isCardRevealed = useDelayedReveal(cardRevealed)
-
+  
   return (
     <div className="flex flex-col items-center">
       {!isCardRevealed ? (
 
         <div className="custom-transition w-10 h-16 rounded-md border-2 border-gray-300 bg-gradient-to-t from-gray-400 to-gray-200">
-          {playerVote !== "" && playerVote !== null ? (
+           {playerVote !== "" && playerVote !== null ? ( 
             <Image
               src={card}
               alt="card"
               className="object-center w-full h-full"
-            /> 
+            />
           ) : null}
         </div>
 

@@ -6,29 +6,28 @@ import socket from '@/app/api/socket/auth'
 interface gameCardRevealButtonProps {
   handleCardRevealed: () => void
   handleEraseVote: () => void
+  gameId: string
 }
 
-export const GameCardRevealButton = ({ handleCardRevealed, handleEraseVote }: gameCardRevealButtonProps) => {
+export const GameCardRevealButton = ({ handleCardRevealed, handleEraseVote , gameId}: gameCardRevealButtonProps) => {
   const { isCardRevealed } = useGameContext()
   const [showCountdown, setShowCountdown] = useState(false)
   const [countdown, setCountdown] = useState(3)
 
   useEffect(() => {
-   
-    socket.on('reveal-game-votes', (value) => {
-      if (value)  handleCardRevealed(); 
-     
-    });
+    socket.on('start-regressive-count-to-reveal-game-votes', (isRevealed:boolean) => {
+      if (isRevealed) handleCardRevealed()     
+    })
     return () => {
-      socket.off('reveal-game-votes');
-    };
-  }, [handleCardRevealed]);
+      socket.off('start-regressive-count-to-reveal-game-votes')
+    }
+  }, [handleCardRevealed])
 
   useEffect(() => {
     if (isCardRevealed) {
       setShowCountdown(true)
       setCountdown(3)
-      socket.emit('reveal-game-votes', true)
+      socket.emit('reveal-game-votes', gameId)
 
       const interval = setInterval(() => {
         setCountdown((prevCountdown) => prevCountdown - 1)

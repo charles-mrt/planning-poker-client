@@ -1,27 +1,21 @@
 import { useState } from 'react'
 import { Card } from './Card'
 import socket from '@/app/api/socket/auth'
+import { useGetGameIdFromUrl } from '@/app/hooks/game/use-get-game-id-by-url'
 
-interface CardsTobeVotedProps {
-  cardSelected?: (cardName: string) => void
-}
+export const CardsTobeVoted = () => {
 
-export const CardsTobeVoted = ({ cardSelected }: CardsTobeVotedProps) => {
-  
   const cardNames = ['xxs', 'x', 's', 'm', 'l', 'xl', 'xxl', '?']
   const [selectedCard, setSelectedCard] = useState<string | null>(null)
 
-
   const handleCardClick = async (cardName: string) => {
     if (selectedCard !== "") setSelectedCard(cardName)
-    if (cardSelected) cardSelected(cardName)
-
+  
     const playerId = localStorage.getItem('player-id')
-    const gameId = localStorage.getItem('game-id')
+    const gameId = useGetGameIdFromUrl()
     const vote = cardName
   
-    socket.emit('player-vote', { gameId, playerId, vote }, (game:any) => {})
-   
+    socket.emit('player-vote', { gameId, playerId, vote }, () => {});
   }
 
   return (

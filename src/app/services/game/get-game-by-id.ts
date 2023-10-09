@@ -17,8 +17,9 @@ export const getGameById = async (id:string): Promise<GameProps | null | any> =>
 
   try {
     const response = await api.get(`/games/${id}`)
- 
+
     if (response.status === 200) {
+      
       const responseData = response.data
       const votes = responseData.players.map((player: Player) => player.vote)
 

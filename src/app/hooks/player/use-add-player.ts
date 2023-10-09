@@ -37,13 +37,8 @@ export const useAddPlayer = () => {
 
     if (!response?.success) return setErrorMessage("Erro interno, tente novamente")
 
-
-
     localStorage.setItem('player-name', formData.player_name)
-    localStorage.setItem('player-id', response.playerId)
-
-    const playerVote = response.playerVote ?? ""
-    localStorage.setItem('player-vote', playerVote)
+    localStorage.setItem('player-id', response.playerId) 
 
     await redirectToGame()
   }
@@ -51,7 +46,6 @@ export const useAddPlayer = () => {
   const redirectToGame = async () => {
     if (gameId !== null) router.push(`/games/${gameId}`)
   }
-
 
   return {
     register,
